@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Extending qryflow Functionality</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Extending qryflow Functionality</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(qryflow)</span></code></pre></div>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p><code>qryflow</code> was designed to be easily extended and allows
+users to define custom chunk types. This vignette provides relevant
+background knowledge on how <code>qryflow</code> works under the hood,
+then walks through how to create and register custom chunk types.</p>
+<p>This vignette assumes the knowledge found in the “Getting Started”
+(<code>vignette(&quot;getting-started&quot;, package = &quot;qryflow&quot;)</code>) and
+“Advanced Usage”
+(<code>vignette(&quot;advanced-qryflow&quot;, package = &quot;qryflow&quot;)</code>)
+vignettes.</p>
+</div>
+<div id="big-picture-how-qryflow-works" class="section level1">
+<h1>Big Picture: How <code>qryflow</code> Works</h1>
+<p>When you run a SQL script using <code>qryflow</code>, the process
+follows these steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>Split the SQL script into chunks using tagged comments (e.g.,
+<code>-- @query: name</code>)</p></li>
+<li><p>Identify the type of each chunk</p></li>
+<li><p>Parse each chunk into a structured object using a
+<strong>type-specific parser</strong></p></li>
+<li><p>Execute each chunk using a <strong>type-specific
+handler</strong></p></li>
+</ol>
+<p>To support a new chunk type, you’ll need to:</p>
+<ul>
+<li><p><strong>Create a parser</strong> — which converts a chunk of raw
+SQL into a structured <code>qryflow_chunk</code> object.</p></li>
+<li><p><strong>Create a handler</strong> — which defines how to execute
+the chunk and return results.</p></li>
+<li><p><strong>Register</strong> your new type with <code>qryflow</code>
+so the package knows how to process it.</p></li>
+</ul>
+</div>
+<div id="creating-parsers-and-handlers" class="section level1">
+<h1>Creating Parsers and Handlers</h1>
+<p>Each chunk type needs to have an associated parser and an associated
+handler. This section outlines what arguments the custom parser and
+handler functions need to accept, what operations they should perform,
+and what results they should return.</p>
+<div id="parsers" class="section level2">
+<h2>Parsers</h2>
+<p>The parser accepts the unaltered SQL statement of the chunk and
+should return a formal <code>qryflow_chunk</code> object. Parsers will
+only be executed on a single chunk at a time. The
+<code>sqflow_chunk</code> object is essentially a list in the form
+of:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">type =</span> type,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">name =</span> name,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">sql =</span> sql,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">tags =</span> tags,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">results =</span> results <span class="co"># Not populated until after execution</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span></code></pre></div>
+<p>The parser must extract the type, name, main SQL statement, and any
+additional tags. The package provides some helpers to do this. As an
+example, here is what the “exec” type parser looks like, with
+informative comments:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>qryflow_exec_parser <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="co"># Get a character vector containing each line</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  lines <span class="ot">&lt;-</span> <span class="fu">read_sql_lines</span>(x)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="co"># Identify any formal qryflow tags</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>  all_tags <span class="ot">&lt;-</span> <span class="fu">extract_all_tags</span>(lines)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="co"># Check to see if an explicit name tag exists for the chunk</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  name <span class="ot">&lt;-</span> all_tags<span class="sc">$</span>name</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="co"># If an explicit name tag doesn&#39;t exist, use the value from the &quot;exec&quot; tag</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="co"># This is how aliases are implemented</span></span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">is.null</span>(name)) {</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>    name <span class="ot">&lt;-</span> all_tags[[<span class="st">&quot;exec&quot;</span>]]</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>  }</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>  <span class="co"># Find any additional tags beyond alias, name, or type</span></span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>  tags <span class="ot">&lt;-</span> <span class="fu">subset_tags</span>(all_tags, <span class="fu">c</span>(<span class="st">&quot;exec&quot;</span>, <span class="st">&quot;name&quot;</span>, <span class="st">&quot;type&quot;</span>), <span class="at">negate =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>  <span class="co"># Collapse the SQL into a single character</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a>  sql_txt <span class="ot">&lt;-</span> <span class="fu">collapse_sql_lines</span>(lines[<span class="sc">!</span><span class="fu">is_tag_line</span>(lines)])</span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a>  <span class="co"># Return the structured object</span></span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>  <span class="fu">new_qryflow_chunk</span>(<span class="at">type =</span> <span class="st">&quot;exec&quot;</span>, <span class="at">name =</span> name, <span class="at">sql =</span> sql_txt, <span class="at">tags =</span> tags)</span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>}</span></code></pre></div>
+<p>Note: The package includes helper functions like
+<code>read_sql_lines()</code>, <code>extract_all_tags()</code>,
+<code>subset_tags()</code>, <code>is_tag_line()</code>, and others to
+make parsing easier.</p>
+</div>
+<div id="handlers" class="section level2">
+<h2>Handlers</h2>
+<p>Handlers accepts both a <code>qryflow_chunk</code> object and a
+database connection object (e.g., <code>DBI::dbConnect</code>). They
+should execute the SQL as appropriate and then return the result:</p>
+<p>This is the handler for the “exec” type:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>qryflow_exec_handler <span class="ot">&lt;-</span> <span class="cf">function</span>(chunk, con, ...) {</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="co"># Pass the SQL of the chunk to desired execution strategy</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  result <span class="ot">&lt;-</span> DBI<span class="sc">::</span><span class="fu">dbExecute</span>(con, chunk<span class="sc">$</span>sql, ...)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="co"># Return the result</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  result</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>}</span></code></pre></div>
+<p>After a custom parser and handler have been created, they need to be
+registered.</p>
+</div>
+<div id="validate-the-parser-and-handler" class="section level2">
+<h2>Validate the Parser and Handler</h2>
+<p><code>qryflow</code> provides two functions to test whether parser
+and handler functions meet the specifications. An error will occur
+if:</p>
+<ul>
+<li><p>The object is not a function</p></li>
+<li><p>The formal arguments are not included</p></li>
+<li><p>The formal arguments are not in the right order</p></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">validate_qryflow_parser</span>(qryflow_exec_parser)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">validate_qryflow_handler</span>(qryflow_exec_handler)</span></code></pre></div>
+<p>Note: These obviously do not test that the code within your function
+is correct nor does it test what output each function is expected to
+produce.</p>
+</div>
+</div>
+<div id="how-the-registry-works" class="section level1">
+<h1>How the Registry Works</h1>
+<p><code>qryflow</code> maintains two internal environments:</p>
+<ul>
+<li><p><code>.qryflow_parsers</code> for chunk parsers</p></li>
+<li><p><code>.qryflow_handlers</code> for chunk handlers</p></li>
+</ul>
+<p>When the package is loaded, default types like “<code>query</code>”
+and “<code>exec</code>” are automatically registered. You can register
+additional types using:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Register separately</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">register_qryflow_parser</span>(<span class="st">&quot;custom&quot;</span>, my_custom_parser_func, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">register_qryflow_handler</span>(<span class="st">&quot;custom&quot;</span>, my_custom_handler_func, <span class="at">overwrite =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># Or register both at once</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">register_qryflow_type</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="st">&quot;custom&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">parser =</span> my_custom_parser_func,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">handler =</span> my_custom_handler_func,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>)</span></code></pre></div>
+<p>We can access what types are registered:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ls_qryflow_parsers</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">ls_qryflow_handlers</span>()</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">ls_qryflow_types</span>()</span></code></pre></div>
+<p>Custom types must be re-registered each session. To make them
+persistent, add registration calls to your <code>.Rprofile</code> (see:
+<a href="https://docs.posit.co/ide/user/ide/guide/environments/r/managing-r.html">Managing
+R Startup</a>), or create a small package with an <code>.onLoad()</code>
+hook (see: <a href="https://r-pkgs.org/code.html#sec-code-onLoad-onAttach">R Packages
+(2e)</a>).</p>
+</div>
+<div id="toy-example-1-create-query-send-chunk-type" class="section level1">
+<h1>Toy Example #1: Create <code>query-send</code> Chunk Type</h1>
+<p>This example shows how to implement a new chunk type that’s similar
+to <code>exec</code> and <code>query</code>. We will create a new type,
+called <code>query-send</code> that works like <code>query</code> except
+calls <code>DBI::dbSendQuery</code> instead of
+<code>DBI::dbGetQuery</code>.</p>
+<p>First, create the parser and handler:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>query_send_parser <span class="ot">&lt;-</span> <span class="cf">function</span>(x, ...) {</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="co"># Convert to individual lines</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  lines <span class="ot">&lt;-</span> <span class="fu">read_sql_lines</span>(x)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  all_tags <span class="ot">&lt;-</span> <span class="fu">extract_all_tags</span>(lines)</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="co"># Check for explicit name</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  name <span class="ot">&lt;-</span> all_tags<span class="sc">$</span>name</span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">is.null</span>(name)) {</span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>    <span class="co"># Accomodate Aliased Approach</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>    name <span class="ot">&lt;-</span> all_tags[[<span class="st">&quot;query-send&quot;</span>]]</span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  }</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>  other_tags <span class="ot">&lt;-</span> <span class="fu">subset_tags</span>(all_tags, <span class="fu">c</span>(<span class="st">&quot;query-send&quot;</span>, <span class="st">&quot;name&quot;</span>, <span class="st">&quot;type&quot;</span>), <span class="at">negate =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  sql_txt <span class="ot">&lt;-</span> <span class="fu">paste0</span>(lines[<span class="sc">!</span><span class="fu">is_tag_line</span>(lines)], <span class="at">collapse =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>  <span class="fu">new_qryflow_chunk</span>(<span class="at">type =</span> <span class="st">&quot;query-send&quot;</span>, <span class="at">name =</span> name, <span class="at">sql =</span> sql_txt, <span class="at">tags =</span> other_tags)</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>}</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>query_send_handler <span class="ot">&lt;-</span> <span class="cf">function</span>(chunk, con, ...){</span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>  res <span class="ot">&lt;-</span> DBI<span class="sc">::</span><span class="fu">dbSendQuery</span>(con, chunk<span class="sc">$</span>sql, ...)</span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a>  results <span class="ot">&lt;-</span> DBI<span class="sc">::</span><span class="fu">dbFetch</span>(res)</span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a>  </span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a>  DBI<span class="sc">::</span><span class="fu">dbClearResult</span>(res)</span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>  </span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a>  results</span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a>}</span></code></pre></div>
+<p>Then, register them:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">register_qryflow_type</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="st">&quot;query-send&quot;</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">parser =</span> query_send_parser,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="at">handler =</span> query_send_handler,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>  <span class="at">overwrite =</span> <span class="cn">TRUE</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>)</span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>Check that they registered properly:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">ls_qryflow_types</span>()</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt; [1] &quot;exec&quot;       &quot;query&quot;      &quot;query-send&quot;</span></span></code></pre></div>
+<p>And test it out on some SQL:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Creates an in-memory sqlite database and populates it with an mtcars table, named &quot;mtcars&quot; </span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>con <span class="ot">&lt;-</span> <span class="fu">example_db_connect</span>(mtcars)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Create </span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>sql <span class="ot">&lt;-</span> <span class="st">&quot;</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="st">-- @query-send: df_mtcars</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="st">SELECT *</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="st">FROM mtcars;</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="st">&quot;</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">qryflow</span>(sql, con)</span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="fu">head</span>(results)</span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt;    mpg cyl disp  hp drat    wt  qsec vs am gear carb</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt; 1 21.0   6  160 110 3.90 2.620 16.46  0  1    4    4</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; 2 21.0   6  160 110 3.90 2.875 17.02  0  1    4    4</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; 3 22.8   4  108  93 3.85 2.320 18.61  1  1    4    1</span></span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt; 4 21.4   6  258 110 3.08 3.215 19.44  1  0    3    1</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt; 5 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2</span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; 6 18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</span></span></code></pre></div>
+</div>
+<div id="exercise-implement-an-include-chunk-type" class="section level1">
+<h1>Exercise: Implement an <code>include</code> Chunk Type</h1>
+<p>Want to try extending <code>qryflow</code> on your own?</p>
+<p>Implement a custom “<code>include</code>” chunk type that loads SQL
+from a separate file and injects it as a chunk.</p>
+<p>For example, take the following statement:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">-- @include: mysql.sql</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">-- @query: my_df</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="kw">table</span></span></code></pre></div>
+<p>Assuming <code>mysql.sql</code> contains:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co">-- @query: mysql</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> <span class="kw">table</span> <span class="kw">FROM</span> another_table</span></code></pre></div>
+<p>How would you create the parser and handler so that functionally,
+what gets returned is:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">-- @query: mysql</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">INTO</span> <span class="kw">table</span> <span class="kw">FROM</span> another_table</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">-- @query: my_df</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> <span class="kw">table</span></span></code></pre></div>
+<p>A word of caution: this may be trickier than you think given how
+chunks are currently implemented.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
