@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +61,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -349,7 +350,7 @@ your SQL lets you:</p>
 <ul>
 <li><p>Keep multiple SQL statements in the same file.</p></li>
 <li><p>Control how SQL is executed (e.g.,
-<code>DBI::dbGetQuery()</code>, <code>dbExecute()</code>)</p></li>
+<code>DBI::dbGetQuery()</code>, <code>DBI::dbExecute()</code>)</p></li>
 <li><p>Attach names to results, so they’re returned as named R
 objects</p></li>
 <li><p>Pass metadata that can be used later in R workflows</p></li>
@@ -395,7 +396,7 @@ filepath to a file that contains SQL.</p>
 <span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a></span>
 <span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">qryflow</span>(sql, con)</span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">qryflow</span>(con, sql)</span>
 <span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a></span>
 <span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
 <span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>df_cyl_6)</span>
@@ -420,7 +421,7 @@ named objects</p></li>
 <h1>Simplify = TRUE</h1>
 <p>By default, <code>qryflow()</code> will return a single data.frame
 (as opposed to a named list of results) if there is only one chunk and
-the argument <code>simplify=TRUE</code>. For example:</p>
+the argument <code>simplify = TRUE</code>. For example:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(qryflow)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Connection to In-Memory DB with table populated from mtcars</span></span>
@@ -433,7 +434,7 @@ the argument <code>simplify=TRUE</code>. For example:</p>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="st">&quot;</span></span>
 <span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># Pass tagged SQL to `qryflow`</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">qryflow</span>(sql, con)</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">qryflow</span>(con, sql)</span>
 <span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
 <span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co"># Access the results from the chunk named `df_cyl_6`</span></span>
 <span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co"># results$df_cyl_6</span></span>
@@ -533,10 +534,10 @@ lines until the next tag or the end of the script.</p>
 <h2>How Splitting Works</h2>
 <ul>
 <li><p>Tagged lines act as markers that start a new chunk.</p></li>
-<li><p>All lines following a tag line belong to that chunk until another
-tag line starts the next chunk.</p></li>
-<li><p>If the script starts without any tags, the entire script is
-treated as one single chunk.</p></li>
+<li><p>All lines immediately following a tag line belong to that chunk
+until another tag line starts the next chunk.</p></li>
+<li><p>If the script has no tags, the entire script is treated as one
+single chunk.</p></li>
 <li><p>If there’s only one tag somewhere in the script, the script is
 split into two chunks:</p>
 <ul>
@@ -600,7 +601,7 @@ the end.</p>
 <span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
 <span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="kw">FROM</span> cyl_6</span></code></pre></div>
 <ul>
-<li><p>Result - Three chunks, each starting at its respective tag
+<li><p>Result - Four chunks, each starting at its respective tag
 line.</p></li>
 <li><p>Each chunk is parsed and executed independently in
 sequence.</p></li>

@@ -1,6 +1,6 @@
 Package: qryflow
 Title: Execute Multi-Step 'SQL' Workflows
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person("Christian", "Million", , "christianmillion93@gmail.com", role = c("aut", "cre", "cph"))
 Description: Execute multi-step 'SQL' workflows by
     leveraging specially formatted comments to define and control
@@ -9,7 +9,7 @@ Description: Execute multi-step 'SQL' workflows by
     in downstream workflows.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Imports: DBI
 Suggests: knitr, rmarkdown, RSQLite, testthat (>= 3.0.0)
 Config/testthat/edition: 3
@@ -18,8 +18,8 @@ URL: https://christian-million.github.io/qryflow/,
         https://github.com/christian-million/qryflow
 BugReports: https://github.com/christian-million/qryflow/issues
 NeedsCompilation: no
-Packaged: 2025-07-15 19:02:39 UTC; chris
+Packaged: 2026-02-05 23:33:21 UTC; Christian Million
 Author: Christian Million [aut, cre, cph]
 Maintainer: Christian Million <christianmillion93@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-07-18 15:20:18 UTC
+Date/Publication: 2026-02-05 23:50:02 UTC

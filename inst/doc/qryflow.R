@@ -33,7 +33,7 @@ FROM cyl_6;
 "
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(sql, con)
+results <- qryflow(con, sql)
 
 # Access the results from the chunk named `df_cyl_6`
 head(results$df_cyl_6)
@@ -51,7 +51,7 @@ FROM mtcars;
 "
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(sql, con)
+results <- qryflow(con, sql)
 
 # Access the results from the chunk named `df_cyl_6`
 # results$df_cyl_6

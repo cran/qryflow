@@ -1,19 +1,16 @@
 .qryflow_handlers <- new.env(parent = emptyenv())
 
-qryflow_handle_chunk <- function(chunk, con, ...) {
-
+qryflow_handle_chunk <- function(con, chunk, ...) {
   handler <- get_qryflow_handler(chunk$type)
 
   if (is.null(handler)) {
     stop(paste0("No handler registered for chunk type '", chunk$type, "'"))
   }
 
-  handler(chunk, con, ...)
-
+  handler(con, chunk, ...)
 }
 
 get_qryflow_handler <- function(type) {
-
   handler <- get(type, envir = .qryflow_handlers)
 
   if (is.null(handler)) {
@@ -21,7 +18,6 @@ get_qryflow_handler <- function(type) {
   }
 
   handler
-
 }
 
 #' Check existence of a given handler in the registry
@@ -38,17 +34,13 @@ get_qryflow_handler <- function(type) {
 #' @seealso [qryflow_parser_exists()] for the parser equivalent.
 #' @export
 qryflow_handler_exists <- function(type) {
-
   exists(type, envir = .qryflow_handlers, inherits = FALSE)
-
 }
 
 #' @export
 #' @rdname ls_qryflow_types
 ls_qryflow_handlers <- function() {
-
   ls(.qryflow_handlers)
-
 }
 
 #' Ensure correct handler structure
@@ -64,7 +56,7 @@ ls_qryflow_handlers <- function() {
 #' criteria.
 #'
 #' @examples
-#' custom_func <- function(chunk, con, ...){
+#' custom_func <- function(con, chunk, ...){
 #'
 #'   # Parsing Code Goes Here
 #'
@@ -73,18 +65,16 @@ ls_qryflow_handlers <- function() {
 #' validate_qryflow_handler(custom_func)
 #' @seealso [validate_qryflow_parser()] for the parser equivalent.
 #' @export
-validate_qryflow_handler <- function(handler){
-
+validate_qryflow_handler <- function(handler) {
   if (!is.function(handler)) {
     stop("Handler must be a function.")
   }
 
   f_args <- names(formals(handler))
 
-  if (!identical(f_args, c("chunk", "con", "..."))) {
+  if (!identical(f_args, c("con", "chunk", "..."))) {
     stop("Handler must have arguments 'chunk', 'con', '...' in that order.")
   }
 
   invisible(TRUE)
 }
-

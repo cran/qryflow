@@ -8,7 +8,7 @@ library(qryflow)
 con <- example_db_connect(mtcars)
 path <- example_sql_path("mtcars.sql")
 
-obj <- qryflow_run(path, con)
+obj <- qryflow_run(con, path)
 
 # A qryflow_result object
 class(obj)
@@ -29,7 +29,7 @@ length(workflow$chunks)
 workflow$chunks[[1]]
 
 ## -----------------------------------------------------------------------------
-executed <- qryflow_execute(workflow, con, source = "mtcars.sql")
+executed <- qryflow_execute(con, workflow, source = "mtcars.sql")
 class(executed)
 names(executed)
 

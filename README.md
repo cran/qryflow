@@ -8,6 +8,9 @@
 [![R-CMD-check](https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/christian-million/qryflow/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/christian-million/qryflow/graph/badge.svg)](https://app.codecov.io/gh/christian-million/qryflow)
+[![Downloads](https://cranlogs.r-pkg.org/badges/grand-total/qryflow)](https://cran.r-project.org/package=qryflow)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/qryflow)](https://cran.r-project.org/package=qryflow)
 <!-- badges: end -->
 
 ## Overview
@@ -75,7 +78,7 @@ FROM cyl_6;
 "
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(sql, con)
+results <- qryflow(con, sql)
 
 # Access the results from the chunk named `df_cyl_6`
 head(results$df_cyl_6)
@@ -94,7 +97,7 @@ The path to a file containing SQL can also be passed:
 filepath <- example_sql_path('mtcars.sql')
 
 # Pass tagged SQL to `qryflow`
-results <- qryflow(filepath, con)
+results <- qryflow(con, filepath)
 
 # Access the results from the chunk named `df_cyl_6`
 results$df_cyl_6 |>
@@ -137,3 +140,7 @@ your needs. If you feel this list is incomplete, please submit an issue:
   comprehensive tools for executing parameterized SQL scripts, managing
   database connections and configurations, supporting spatial data
   types, and statement-level control within SQL files.
+
+- [`SQLove`](https://cran.r-project.org/package=SQLove) is ‘a
+  lightweight R package for handling complex SQL scripts including temp
+  tables, multiple queries, etc.’
